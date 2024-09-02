@@ -3,8 +3,8 @@ use crate::span::Span;
 
 #[derive(Debug)]
 pub struct Block {
-    stmts: Vec<Stmt>,
-    span: Span,
+    pub stmts: Vec<Stmt>,
+    pub span: Span,
 }
 
 impl Block {

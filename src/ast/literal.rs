@@ -1,8 +1,11 @@
 use crate::span::Span;
 
+use super::Unit;
+
 #[derive(Debug)]
 pub enum Lit {
     NumLit(NumLit),
+    UnitLit(Unit),
 }
 
 #[derive(Clone, PartialEq, Debug)]

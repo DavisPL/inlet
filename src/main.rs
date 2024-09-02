@@ -2,14 +2,18 @@ use std::{fs, path::PathBuf};
 
 use lexer::Lexer;
 use parser::Parser;
+use sema::OriginVisitor;
+use visit::Visit;
 
 mod ast;
 mod diagnostic;
 mod error;
 mod lexer;
 mod parser;
+mod sema;
 mod span;
 mod token;
+mod visit;
 
 fn main() {
     let path = PathBuf::from("./example/main.inlet");
@@ -30,5 +34,9 @@ fn main() {
     let mut parser = Parser::new(&tokens, &spans);
     let ast = parser.parse_file().unwrap(); // TODO: Figure out a better way to handle errors
 
-    println!("{:#?}", ast);
+    // println!("{:#?}", ast);
+
+    // Next, we'll run some semantic analysis
+    let mut visitor = OriginVisitor {};
+    visitor.visit_file(&ast);
 }

@@ -13,10 +13,10 @@ pub enum Item {
 
 #[derive(Debug)]
 pub struct ItemFn {
-    ident: Ident,
-    body: Block,
-    ret_origin: Origin,
-    span: Span,
+    pub ident: Ident,
+    pub body: Block,
+    pub ret_origin: Origin,
+    pub span: Span,
 }
 
 impl ItemFn {
@@ -52,9 +52,9 @@ impl ItemFn {
 
 #[derive(Debug)]
 pub struct ItemMod {
-    ident: Ident,
-    file: File,
-    span: Span,
+    pub ident: Ident,
+    pub file: File,
+    pub span: Span,
 }
 
 impl ItemMod {

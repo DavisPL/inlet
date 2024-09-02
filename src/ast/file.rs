@@ -3,8 +3,8 @@ use crate::span::Span;
 
 #[derive(Debug)]
 pub struct File {
-    items: Vec<Item>,
-    span: Span,
+    pub items: Vec<Item>,
+    pub span: Span,
 }
 
 impl File {

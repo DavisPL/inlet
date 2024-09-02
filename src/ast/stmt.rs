@@ -2,6 +2,7 @@ use crate::ast::Expr;
 use crate::ast::Ident;
 use crate::span::Span;
 
+use super::Lit;
 use super::Unit;
 
 #[derive(Debug)]
@@ -11,9 +12,9 @@ pub enum Stmt {
 
 #[derive(Debug)]
 pub struct Local {
-    ident: Ident,
-    expr: Expr,
-    span: Span,
+    pub ident: Ident,
+    pub expr: Expr,
+    pub span: Span,
 }
 
 impl Local {
@@ -21,7 +22,7 @@ impl Local {
         Local {
             ident: Ident::new(),
             span: Span::new(),
-            expr: Expr::Unit(Unit::new()),
+            expr: Expr::Lit(Lit::UnitLit(Unit::new())),
         }
     }
 

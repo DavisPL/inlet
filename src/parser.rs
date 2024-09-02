@@ -168,10 +168,9 @@ impl<'a> Parser<'a> {
         let mut expr = self.parse_term()?;
 
         while self.current() == &Token::Plus {
-            // TODO: This is incorrectly parsing addition with right hand precedence... fix it!
             self.expect(Token::Plus)?;
-            let rhs = self.parse_expr()?;
-            expr = Expr::Bin(BinExp::new(expr, Op::Plus, rhs).with_span(self.span()))
+            let rhs = self.parse_term()?;
+            expr = Expr::Bin(BinExp::new(expr, Op::Add, rhs).with_span(self.span()));
         }
 
         Ok(expr)
@@ -179,6 +178,20 @@ impl<'a> Parser<'a> {
 
     pub fn parse_term(&mut self) -> ParseResult<Expr> {
         // Start a new span for this term
+        self.start();
+        let mut expr = self.parse_factor()?;
+
+        while self.current() == &Token::Star {
+            self.expect(Token::Star)?;
+            let rhs = self.parse_factor()?;
+            expr = Expr::Bin(BinExp::new(expr, Op::Multiply, rhs).with_span(self.span()));
+        }
+
+        Ok(expr)
+    }
+
+    pub fn parse_factor(&mut self) -> ParseResult<Expr> {
+        // Start a new span for this factor
         self.start();
 
         let current = self.current().clone();
