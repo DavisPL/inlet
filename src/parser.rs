@@ -95,7 +95,7 @@ impl<'a> Parser<'a> {
         match self.current().clone() {
             Token::Ident(ident) => {
                 self.advance(1);
-                Ok(ident.clone())
+                Ok(ident.clone().with_span(self.span()))
             }
             _ => Err(ParseError::new(format!(
                 "Expected identifier, found {}",

@@ -7,10 +7,11 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'inlet'",
+            "name": "Debug Inlet",
             "cargo": {
                 "args": [
                     "build",
+                    "--profile=dev",
                     "--bin=inlet",
                     "--package=inlet"
                 ],
@@ -25,7 +26,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'inlet'",
+            "name": "Debug Inlet Unit Tests",
             "cargo": {
                 "args": [
                     "test",

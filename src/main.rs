@@ -23,12 +23,12 @@ fn main() {
     let mut lexer = Lexer::new(&slice);
     let (tokens, spans) = lexer.lex().unwrap(); // TODO: Figure out a better way to handle errors
 
-    println!("{:#?}", tokens);
+    // println!("{:#?}", tokens);
     println!("{:#?}", spans);
 
     // Next, we'll run the parser
     let mut parser = Parser::new(&tokens, &spans);
     let ast = parser.parse_file().unwrap(); // TODO: Figure out a better way to handle errors
 
-    println!("{:#?}", ast);
+    // println!("{:#?}", ast);
 }

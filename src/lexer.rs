@@ -197,8 +197,10 @@ impl<'a> Lexer<'a> {
 
     /// Completes a span, using `self.marker` for the `from` location. Should be called every time a new token is collected.
     fn complete(&mut self) {
+        let span = Span::new().from(self.start.clone()).to(self.end.clone());
+        println!("[DEBUG] {:#?}", span);
         self.spans
-            .push(Span::new().from(self.start.clone()).to(self.end.clone()));
+            .push(span);
     }
 
     fn current(&self) -> char {
@@ -226,7 +228,10 @@ impl<'a> Lexer<'a> {
 
             self.column += 1;
             if self.source[self.index] == '\n' {
-                self.line += 1;
+                while self.index <= self.source.len() && self.source[self.index] == '\n' {
+                    self.index += 1;
+                    self.line += 1;
+                }
                 self.column = 1;
             }
         }
