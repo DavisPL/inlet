@@ -2,8 +2,8 @@ use std::fmt::Display;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Span {
-    from: Location,
-    to: Location,
+    pub from: Location,
+    pub to: Location,
 }
 
 impl Span {

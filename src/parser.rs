@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::ast::{Block, Call, File, Ident, Item, ItemFn, ItemMod, Origin, Path};
 
 use crate::error::ParseError;
@@ -8,6 +10,7 @@ pub struct Parser<'a> {
     input: &'a [Token],
     spans: &'a [Span],
     index: usize,
+    starts: Vec<Span>,
 }
 
 type ParseResult<T> = Result<T, ParseError>;
@@ -18,18 +21,22 @@ impl<'a> Parser<'a> {
             input,
             spans,
             index: 0,
+            starts: vec![spans[0].clone()],
         }
     }
 
     /// Parse an entire file
     pub fn parse_file(&mut self) -> ParseResult<File> {
+        // Start a new span
+        self.start();
+
         let mut items: Vec<Item> = Vec::new();
 
         while (self.current() != &Token::EOF && self.current() != &Token::RBrace) {
             items.push(self.parse_item()?);
         }
 
-        Ok(File::new().with_items(items))
+        Ok(File::new().with_items(items).with_span(self.span()))
     }
 
     pub fn parse_item(&mut self) -> ParseResult<Item> {
@@ -48,6 +55,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_item_fn(&mut self) -> ParseResult<Item> {
+        // Start a new span
+        self.start();
+
         // Consume the `fn` token
         self.expect(Token::KwFn)?;
 
@@ -72,7 +82,8 @@ impl<'a> Parser<'a> {
             ItemFn::new()
                 .with_ident(ident)
                 .with_body(body)
-                .with_ret_origin(ret_origin),
+                .with_ret_origin(ret_origin)
+                .with_span(self.span()),
         ))
     }
 
@@ -92,6 +103,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_ident(&mut self) -> ParseResult<Ident> {
+        // Start a new span
+        self.start();
+
         match self.current().clone() {
             Token::Ident(ident) => {
                 self.advance(1);
@@ -105,6 +119,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_block(&mut self) -> ParseResult<Block> {
+        // Start a new span
+        self.start();
+
         let mut calls = Vec::new();
 
         while self.current() != &Token::RBrace {
@@ -112,7 +129,7 @@ impl<'a> Parser<'a> {
             self.expect(Token::Semi)?;
         }
 
-        Ok(Block::new().with_calls(calls))
+        Ok(Block::new().with_calls(calls).with_span(self.span()))
     }
 
     pub fn parse_call(&mut self) -> ParseResult<Call> {
@@ -135,6 +152,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_item_mod(&mut self) -> ParseResult<Item> {
+        // Start a new span
+        self.start();
+
         // Consume the `fn` token
         self.expect(Token::KwMod)?;
 
@@ -147,8 +167,25 @@ impl<'a> Parser<'a> {
         self.expect(Token::RBrace)?;
 
         Ok(Item::ItemMod(
-            ItemMod::new().with_ident(ident).with_file(file),
+            ItemMod::new()
+                .with_ident(ident)
+                .with_file(file)
+                .with_span(self.span()),
         ))
+    }
+
+    fn start(&mut self) {
+        let mut span = Span::new();
+
+        if self.index < self.spans.len() {
+            span = self.spans[self.index].clone();
+        }
+
+        self.starts.push(span);
+    }
+
+    fn finish(&mut self) {
+        self.starts.pop();
     }
 
     fn current(&self) -> &Token {
@@ -159,15 +196,22 @@ impl<'a> Parser<'a> {
         &self.input[self.index]
     }
 
-    fn span(&self) -> Span {
-        if self.index > self.input.len() {
-            return Span::new();
+    fn span(&mut self) -> Span {
+        let mut end = self.starts[0].clone();
+
+        if self.index > 0 && self.index <= self.spans.len() {
+            end = self.spans[self.index - 1].clone();
         }
 
-        self.spans[self.index].clone() // TODO: Figure out if there's a way to avoid cloning here
+        let span = Span::new()
+            .from(self.starts.last().unwrap().from.clone())
+            .to(end.to.clone());
+
+        self.finish();
+        span
     }
 
-    fn eat(&mut self, kind: Token) -> bool {
+    fn _eat(&mut self, kind: Token) -> bool {
         if self.current() == &kind {
             self.advance(1);
             return true;
@@ -181,17 +225,22 @@ impl<'a> Parser<'a> {
     }
 
     fn expect(&mut self, kind: Token) -> ParseResult<&Token> {
+        // Start a new span
+        self.start();
+
         if self.current().clone() == kind {
             self.advance(1);
             // Return the current token
+            self.finish();
             return Ok(self.current());
         }
 
+        let err_span = self.span();
         Err(ParseError::from(format!(
             "Expected '{}' but found '{}' ({})",
             kind,
             self.current(),
-            self.span()
+            err_span
         )))
     }
 }

@@ -181,7 +181,12 @@ impl<'a> Lexer<'a> {
             token = self.next()?;
         }
 
+        let loc = Location::new()
+            .with_column(self.column)
+            .with_line(self.line);
+        self.spans.push(Span::new().from(loc.clone()).to(loc));
         tokens.push(Token::EOF);
+
         Ok((tokens, self.spans.clone())) // TODO: Find a way to avoid cloning here
     }
 
@@ -197,10 +202,8 @@ impl<'a> Lexer<'a> {
 
     /// Completes a span, using `self.marker` for the `from` location. Should be called every time a new token is collected.
     fn complete(&mut self) {
-        let span = Span::new().from(self.start.clone()).to(self.end.clone());
-        println!("[DEBUG] {:#?}", span);
         self.spans
-            .push(span);
+            .push(Span::new().from(self.start.clone()).to(self.end.clone()));
     }
 
     fn current(&self) -> char {

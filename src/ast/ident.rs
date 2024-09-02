@@ -3,12 +3,15 @@ use crate::span::Span;
 #[derive(Clone, PartialEq, Debug)]
 pub struct Ident {
     raw: String,
-    span: Span
+    span: Span,
 }
 
 impl Ident {
     pub fn new() -> Self {
-        Ident { raw: String::new(), span: Span::new() }
+        Ident {
+            raw: String::new(),
+            span: Span::new(),
+        }
     }
 
     pub fn with_raw(mut self, raw: String) -> Self {

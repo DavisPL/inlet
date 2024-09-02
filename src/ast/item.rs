@@ -1,4 +1,7 @@
-use crate::ast::{block::Block, file::File, ident::Ident};
+use crate::{
+    ast::{block::Block, file::File, ident::Ident},
+    span::Span,
+};
 
 use super::{origin, Origin};
 
@@ -13,6 +16,7 @@ pub struct ItemFn {
     ident: Ident,
     body: Block,
     ret_origin: Origin,
+    span: Span,
 }
 
 impl ItemFn {
@@ -21,6 +25,7 @@ impl ItemFn {
             ident: Ident::new(),
             body: Block::new(),
             ret_origin: Origin::Universal,
+            span: Span::new(),
         }
     }
 
@@ -38,12 +43,18 @@ impl ItemFn {
         self.ret_origin = ret_origin;
         self
     }
+
+    pub fn with_span(mut self, span: Span) -> Self {
+        self.span = span;
+        self
+    }
 }
 
 #[derive(Debug)]
 pub struct ItemMod {
     ident: Ident,
     file: File,
+    span: Span,
 }
 
 impl ItemMod {
@@ -51,6 +62,7 @@ impl ItemMod {
         ItemMod {
             ident: Ident::new(),
             file: File::new(),
+            span: Span::new(),
         }
     }
 
@@ -61,6 +73,11 @@ impl ItemMod {
 
     pub fn with_file(mut self, body: File) -> Self {
         self.file = body;
+        self
+    }
+
+    pub fn with_span(mut self, span: Span) -> Self {
+        self.span = span;
         self
     }
 }

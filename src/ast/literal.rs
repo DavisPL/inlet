@@ -1,15 +1,26 @@
+use crate::span::Span;
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct NumLit {
     value: i32,
+    span: Span,
 }
 
 impl NumLit {
     pub fn new() -> Self {
-        NumLit { value: 0 }
+        NumLit {
+            value: 0,
+            span: Span::new(),
+        }
     }
 
     pub fn with_value(mut self, value: i32) -> Self {
         self.value = value;
+        self
+    }
+
+    pub fn with_span(mut self, span: Span) -> Self {
+        self.span = span;
         self
     }
 
