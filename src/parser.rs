@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::ast::{Block, Call, File, Ident, Item, ItemFn, ItemMod, Origin, Path};
+use crate::ast::{BinExp, Block, Expr, File, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Stmt};
 
 use crate::error::ParseError;
 use crate::span::Span;
@@ -125,18 +125,67 @@ impl<'a> Parser<'a> {
         let mut calls = Vec::new();
 
         while self.current() != &Token::RBrace {
-            calls.push(self.parse_call()?);
+            calls.push(self.parse_stmt()?);
             self.expect(Token::Semi)?;
         }
 
         Ok(Block::new().with_calls(calls).with_span(self.span()))
     }
 
-    pub fn parse_call(&mut self) -> ParseResult<Call> {
-        let path = self.parse_path()?;
-        self.expect(Token::LParen)?;
-        self.expect(Token::RParen)?;
-        Ok(Call::new().with_path(path))
+    pub fn parse_stmt(&mut self) -> ParseResult<Stmt> {
+        let current = self.current();
+
+        if current == &Token::KwLet {
+            return Ok(Stmt::Local(self.parse_local()?));
+        }
+
+        Err(ParseError::from(format!("Unknown statement beginning with '{}'", current)))
+    }
+    
+    pub fn parse_local(&mut self) -> ParseResult<Local> {
+        self.start();
+        self.expect(Token::KwLet)?;
+
+        let ident = self.parse_ident()?;
+
+        self.expect(Token::Equal)?;
+
+        let expr = self.parse_expr()?;
+
+        Ok(Local::new().with_ident(ident).with_expr(expr).with_span(self.span()))
+    }
+
+    pub fn parse_expr(&mut self) -> ParseResult<Expr> {
+        self.start();
+        let mut expr = self.parse_term()?;
+
+        while self.current() == &Token::Plus {
+            self.expect(Token::Plus)?;
+            let rhs = self.parse_expr()?;
+            expr = Expr::Bin(BinExp::new(expr, Op::Plus, rhs).with_span(self.span()))
+        }
+
+        Ok(expr)
+    }
+
+    pub fn parse_term(&mut self) -> ParseResult<Expr> {
+        self.start();
+        let current = self.current().clone();
+        match current {
+            Token::NumLit(num_lit) => {
+                self.advance(1);
+                Ok(Expr::Lit(Lit::NumLit(num_lit.clone().with_span(self.span()))))
+            },
+
+            Token::Ident(ident) => {
+                self.advance(1);
+                Ok(Expr::Ident(ident.clone().with_span(self.span())))
+            },
+
+            _ => {
+                Err(ParseError::from(format!("Expected number or identifier, found '{}'", current)))
+            }
+        }
     }
 
     pub fn parse_path(&mut self) -> ParseResult<Path> {

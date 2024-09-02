@@ -1,22 +1,22 @@
-use crate::ast::call::Call;
+use crate::ast::stmt::Stmt;
 use crate::span::Span;
 
 #[derive(Debug)]
 pub struct Block {
-    calls: Vec<Call>,
+    stmts: Vec<Stmt>,
     span: Span,
 }
 
 impl Block {
     pub fn new() -> Self {
         Block {
-            calls: vec![],
+            stmts: vec![],
             span: Span::new(),
         }
     }
 
-    pub fn with_calls(mut self, calls: Vec<Call>) -> Self {
-        self.calls = calls;
+    pub fn with_calls(mut self, calls: Vec<Stmt>) -> Self {
+        self.stmts = calls;
         self
     }
 

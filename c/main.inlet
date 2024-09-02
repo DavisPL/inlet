@@ -1,11 +1,11 @@
 mod bar {
     mod baz {
         fn foo() -> {boo::bar::baz} {
-
+            let x = 6 + 6 + y;
         }
     }
 
     fn some() -> {*} {
-        
+
     }
 }

@@ -147,6 +147,18 @@ impl<'a> Lexer<'a> {
                     }
                 }
 
+                ';' => {
+                    self.step(1);
+                    self.complete();
+                    return Ok(Token::Semi);
+                }
+                 
+                '=' => {
+                    self.step(1);
+                    self.complete();
+                    return Ok(Token::Equal);
+                }
+
                 // Two character lokahead
                 ':' => {
                     if self.lookahead(1) == ':' {

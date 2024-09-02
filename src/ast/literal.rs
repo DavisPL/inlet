@@ -1,5 +1,10 @@
 use crate::span::Span;
 
+#[derive(Debug)]
+pub enum Lit {
+    NumLit(NumLit),
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct NumLit {
     value: i32,
