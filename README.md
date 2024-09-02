@@ -1,5 +1,9 @@
 # Inlet
 
+<p align="center">
+    <img src="./documentation/images/Inlet.png" style="width: 200px; max-width: 100%"/>
+</p>
+
 ## Introduction
 Inlet is a very, _very_ simple language that implements capability safety by tagging every value with an "origin."
 
