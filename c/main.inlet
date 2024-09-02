@@ -1,0 +1,11 @@
+mod bar {
+    mod baz {
+        fn foo() -> {boo::bar::baz} {
+
+        }
+    }
+
+    fn some() -> {*} {
+        
+    }
+}
