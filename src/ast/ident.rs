@@ -2,8 +2,8 @@ use crate::span::Span;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Ident {
-    raw: String,
-    span: Span,
+    pub raw: String,
+    pub span: Span,
 }
 
 impl Ident {
@@ -26,5 +26,11 @@ impl Ident {
 
     pub fn raw(&self) -> &str {
         &self.raw
+    }
+}
+
+impl ToString for Ident {
+    fn to_string(&self) -> String {
+        self.raw.clone()
     }
 }

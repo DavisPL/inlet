@@ -1,0 +1,105 @@
+mod error;
+
+use error::{SemaError, SemaResult};
+
+use crate::{
+    ast::{Expr, File, Path},
+    symbol::SymbolTable,
+    visit::{self, visit_item, visit_item_mod, Visit},
+};
+
+#[derive(Clone)]
+pub enum Origin {
+    Universal,
+    Exact(String),
+}
+
+#[derive(Clone)]
+pub struct SymbolData {
+    origin: Origin,
+}
+
+pub struct FileVisitor {
+    prefix: String,
+    table: SymbolTable<SymbolData>,
+}
+
+impl FileVisitor {
+    pub fn visit(prefix: String, node: &File) -> SemaResult<()> {
+        let mut visitor = FileVisitor {
+            prefix,
+            table: SymbolTable::new(),
+        };
+
+        visitor.visit_file(node);
+        Ok(())
+    }
+}
+
+impl Visit for FileVisitor {
+    fn visit_item_mod(&mut self, node: &crate::ast::ItemMod) {
+        let _prefix = self.prefix.clone();
+
+        self.prefix += "::";
+        self.prefix += &node.ident.to_string();
+
+        visit_item_mod(self, node);
+
+        self.prefix = _prefix;
+    }
+
+    fn visit_local(&mut self, node: &crate::ast::Local) {
+        let name = node.ident.to_string();
+
+        // Calculate the origin of the expression
+        let origin = ExprVisitor::visit(&self.prefix, &self.table, &node.expr);
+
+        // Insert into the symbol table
+        self.table.insert(name, SymbolData { origin })
+    }
+}
+
+pub struct ExprVisitor<'a> {
+    prefix: &'a str,
+    origin: Origin,
+    table: &'a SymbolTable<SymbolData>,
+}
+
+impl<'a> ExprVisitor<'a> {
+    pub fn visit(prefix: &'a str, table: &'a SymbolTable<SymbolData>, expr: &Expr) -> Origin {
+        let mut visitor = ExprVisitor {
+            prefix,
+            origin: Origin::Universal,
+            table,
+        };
+
+        visitor.visit_expr(expr);
+
+        visitor.origin
+    }
+}
+
+impl<'a> Visit for ExprVisitor<'a> {
+    fn visit_bin_expr(&mut self, _: &crate::ast::BinExp) {
+        // Any binary expression that occurs in origin `o` will have that origin
+        self.origin = Origin::Exact(self.prefix.to_owned())
+    }
+
+    fn visit_ident(&mut self, node: &crate::ast::Ident) {
+        let name = node.raw.to_string();
+
+        if let Some(data) = self.table.find(&name) {
+            self.origin = data.origin;
+        } else {
+            panic!(
+                "Could not find definition of identifier {} ({})",
+                name, node.span
+            );
+        }
+    }
+
+    fn visit_num_lit(&mut self, _node: &crate::ast::NumLit) {
+        // Any literal that occurs in origin `o` will have that origin
+        self.origin = Origin::Exact(self.prefix.to_owned())
+    }
+}

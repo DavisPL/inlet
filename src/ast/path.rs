@@ -1,6 +1,6 @@
 use crate::ast::ident::Ident;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Path {
     segments: Vec<Ident>,
 }

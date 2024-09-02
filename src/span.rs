@@ -36,8 +36,8 @@ impl Display for Span {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Location {
-    line: usize,
-    column: usize,
+    pub line: usize,
+    pub column: usize,
 }
 
 impl Location {
