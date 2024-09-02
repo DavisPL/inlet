@@ -11,7 +11,11 @@ item-fn ::= "fn" ident ["[" ("*"|path) ]"] "(" param-list ")" "{" block "}"
 
 path ::= ident {"::" ident}
 
-block ::= { call; }
+block ::= { stmt ";" }
 
-call ::= path "(" ")"
+stmt ::= "let" ident "=" expr
+
+expr ::= term { "+" expr }
+
+term ::= "(" expr ")" | ident | num-lit
 ```

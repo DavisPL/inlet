@@ -12,7 +12,7 @@ mod span;
 mod token;
 
 fn main() {
-    let path = PathBuf::from("./c/main.inlet");
+    let path = PathBuf::from("./example/main.inlet");
 
     // First, we'll read the entire file as a string
     let source = fs::read_to_string(path)

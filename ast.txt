@@ -68,25 +68,7 @@ File {
                                                                 },
                                                                 expr: Bin(
                                                                     BinExp {
-                                                                        lhs: Lit(
-                                                                            NumLit(
-                                                                                NumLit {
-                                                                                    value: 6,
-                                                                                    span: Span {
-                                                                                        from: Location {
-                                                                                            line: 4,
-                                                                                            column: 21,
-                                                                                        },
-                                                                                        to: Location {
-                                                                                            line: 4,
-                                                                                            column: 21,
-                                                                                        },
-                                                                                    },
-                                                                                },
-                                                                            ),
-                                                                        ),
-                                                                        op: Plus,
-                                                                        rhs: Bin(
+                                                                        lhs: Bin(
                                                                             BinExp {
                                                                                 lhs: Lit(
                                                                                     NumLit(
@@ -95,40 +77,58 @@ File {
                                                                                             span: Span {
                                                                                                 from: Location {
                                                                                                     line: 4,
-                                                                                                    column: 25,
+                                                                                                    column: 22,
                                                                                                 },
                                                                                                 to: Location {
                                                                                                     line: 4,
-                                                                                                    column: 25,
+                                                                                                    column: 22,
                                                                                                 },
                                                                                             },
                                                                                         },
                                                                                     ),
                                                                                 ),
                                                                                 op: Plus,
-                                                                                rhs: Ident(
-                                                                                    Ident {
-                                                                                        raw: "y",
-                                                                                        span: Span {
-                                                                                            from: Location {
-                                                                                                line: 4,
-                                                                                                column: 29,
-                                                                                            },
-                                                                                            to: Location {
-                                                                                                line: 4,
-                                                                                                column: 29,
+                                                                                rhs: Lit(
+                                                                                    NumLit(
+                                                                                        NumLit {
+                                                                                            value: 6,
+                                                                                            span: Span {
+                                                                                                from: Location {
+                                                                                                    line: 4,
+                                                                                                    column: 26,
+                                                                                                },
+                                                                                                to: Location {
+                                                                                                    line: 4,
+                                                                                                    column: 26,
+                                                                                                },
                                                                                             },
                                                                                         },
-                                                                                    },
+                                                                                    ),
                                                                                 ),
                                                                                 span: Span {
                                                                                     from: Location {
                                                                                         line: 4,
-                                                                                        column: 29,
+                                                                                        column: 26,
                                                                                     },
                                                                                     to: Location {
                                                                                         line: 4,
-                                                                                        column: 29,
+                                                                                        column: 26,
+                                                                                    },
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                        op: Plus,
+                                                                        rhs: Ident(
+                                                                            Ident {
+                                                                                raw: "y",
+                                                                                span: Span {
+                                                                                    from: Location {
+                                                                                        line: 4,
+                                                                                        column: 31,
+                                                                                    },
+                                                                                    to: Location {
+                                                                                        line: 4,
+                                                                                        column: 31,
                                                                                     },
                                                                                 },
                                                                             },
@@ -136,11 +136,11 @@ File {
                                                                         span: Span {
                                                                             from: Location {
                                                                                 line: 4,
-                                                                                column: 25,
+                                                                                column: 31,
                                                                             },
                                                                             to: Location {
                                                                                 line: 4,
-                                                                                column: 29,
+                                                                                column: 31,
                                                                             },
                                                                         },
                                                                     },
@@ -148,11 +148,11 @@ File {
                                                                 span: Span {
                                                                     from: Location {
                                                                         line: 4,
-                                                                        column: 21,
+                                                                        column: 22,
                                                                     },
                                                                     to: Location {
                                                                         line: 4,
-                                                                        column: 29,
+                                                                        column: 31,
                                                                     },
                                                                 },
                                                             },
@@ -161,11 +161,11 @@ File {
                                                     span: Span {
                                                         from: Location {
                                                             line: 4,
-                                                            column: 13,
+                                                            column: 21,
                                                         },
                                                         to: Location {
                                                             line: 4,
-                                                            column: 30,
+                                                            column: 32,
                                                         },
                                                     },
                                                 },
@@ -217,7 +217,7 @@ File {
                                                 span: Span {
                                                     from: Location {
                                                         line: 4,
-                                                        column: 13,
+                                                        column: 21,
                                                     },
                                                     to: Location {
                                                         line: 5,
@@ -229,8 +229,8 @@ File {
                                     ],
                                     span: Span {
                                         from: Location {
-                                            line: 3,
-                                            column: 9,
+                                            line: 4,
+                                            column: 13,
                                         },
                                         to: Location {
                                             line: 5,
@@ -240,8 +240,8 @@ File {
                                 },
                                 span: Span {
                                     from: Location {
-                                        line: 3,
-                                        column: 9,
+                                        line: 4,
+                                        column: 13,
                                     },
                                     to: Location {
                                         line: 6,
@@ -294,8 +294,8 @@ File {
                     ],
                     span: Span {
                         from: Location {
-                            line: 2,
-                            column: 5,
+                            line: 3,
+                            column: 9,
                         },
                         to: Location {
                             line: 10,
@@ -305,8 +305,8 @@ File {
                 },
                 span: Span {
                     from: Location {
-                        line: 2,
-                        column: 5,
+                        line: 3,
+                        column: 9,
                     },
                     to: Location {
                         line: 11,
@@ -318,8 +318,8 @@ File {
     ],
     span: Span {
         from: Location {
-            line: 1,
-            column: 1,
+            line: 2,
+            column: 5,
         },
         to: Location {
             line: 11,

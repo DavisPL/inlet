@@ -168,6 +168,7 @@ impl<'a> Parser<'a> {
         let mut expr = self.parse_term()?;
 
         while self.current() == &Token::Plus {
+            // TODO: This is incorrectly parsing addition with right hand precedence... fix it!
             self.expect(Token::Plus)?;
             let rhs = self.parse_expr()?;
             expr = Expr::Bin(BinExp::new(expr, Op::Plus, rhs).with_span(self.span()))
@@ -177,7 +178,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_term(&mut self) -> ParseResult<Expr> {
+        // Start a new span for this term
         self.start();
+
         let current = self.current().clone();
         match current {
             Token::NumLit(num_lit) => {
@@ -190,6 +193,13 @@ impl<'a> Parser<'a> {
             Token::Ident(ident) => {
                 self.advance(1);
                 Ok(Expr::Ident(ident.clone().with_span(self.span())))
+            }
+
+            Token::LParen => {
+                self.advance(1);
+                let expr = self.parse_expr();
+                self.expect(Token::RParen)?;
+                expr
             }
 
             _ => Err(ParseError::from(format!(
