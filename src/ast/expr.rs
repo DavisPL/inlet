@@ -8,12 +8,12 @@ pub enum Expr {
     Bin(BinExp),
     Lit(Lit),
     Ident(Ident),
-    Unit(Unit)
+    Unit(Unit),
 }
 
 #[derive(Debug)]
 pub enum Op {
-    Plus
+    Plus,
 }
 
 #[derive(Debug)]
@@ -21,7 +21,7 @@ pub struct BinExp {
     lhs: Box<Expr>,
     op: Op,
     rhs: Box<Expr>,
-    span: Span
+    span: Span,
 }
 
 impl BinExp {
@@ -32,7 +32,7 @@ impl BinExp {
             lhs: Box::new(lhs),
             op: Op::Plus,
             rhs: Box::new(rhs),
-            span: Span::new()
+            span: Span::new(),
         }
     }
 
@@ -44,14 +44,14 @@ impl BinExp {
 
 #[derive(Debug)]
 pub struct Unit {
-    span: Span
+    span: Span,
 }
 
 impl Unit {
     pub fn new() -> Self {
         Unit { span: Span::new() }
     }
-    
+
     pub fn with_span(mut self, span: Span) -> Self {
         self.span = span;
         self

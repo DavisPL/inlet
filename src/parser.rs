@@ -1,6 +1,8 @@
 use std::collections::VecDeque;
 
-use crate::ast::{BinExp, Block, Expr, File, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Stmt};
+use crate::ast::{
+    BinExp, Block, Expr, File, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Stmt,
+};
 
 use crate::error::ParseError;
 use crate::span::Span;
@@ -139,9 +141,12 @@ impl<'a> Parser<'a> {
             return Ok(Stmt::Local(self.parse_local()?));
         }
 
-        Err(ParseError::from(format!("Unknown statement beginning with '{}'", current)))
+        Err(ParseError::from(format!(
+            "Unknown statement beginning with '{}'",
+            current
+        )))
     }
-    
+
     pub fn parse_local(&mut self) -> ParseResult<Local> {
         self.start();
         self.expect(Token::KwLet)?;
@@ -152,7 +157,10 @@ impl<'a> Parser<'a> {
 
         let expr = self.parse_expr()?;
 
-        Ok(Local::new().with_ident(ident).with_expr(expr).with_span(self.span()))
+        Ok(Local::new()
+            .with_ident(ident)
+            .with_expr(expr)
+            .with_span(self.span()))
     }
 
     pub fn parse_expr(&mut self) -> ParseResult<Expr> {
@@ -174,17 +182,20 @@ impl<'a> Parser<'a> {
         match current {
             Token::NumLit(num_lit) => {
                 self.advance(1);
-                Ok(Expr::Lit(Lit::NumLit(num_lit.clone().with_span(self.span()))))
-            },
+                Ok(Expr::Lit(Lit::NumLit(
+                    num_lit.clone().with_span(self.span()),
+                )))
+            }
 
             Token::Ident(ident) => {
                 self.advance(1);
                 Ok(Expr::Ident(ident.clone().with_span(self.span())))
-            },
-
-            _ => {
-                Err(ParseError::from(format!("Expected number or identifier, found '{}'", current)))
             }
+
+            _ => Err(ParseError::from(format!(
+                "Expected number or identifier, found '{}'",
+                current
+            ))),
         }
     }
 

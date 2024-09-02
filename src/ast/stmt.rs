@@ -1,24 +1,28 @@
+use crate::ast::Expr;
 use crate::ast::Ident;
 use crate::span::Span;
-use crate::ast::Expr;
 
 use super::Unit;
 
 #[derive(Debug)]
 pub enum Stmt {
-    Local(Local)
+    Local(Local),
 }
 
 #[derive(Debug)]
 pub struct Local {
     ident: Ident,
     expr: Expr,
-    span: Span
+    span: Span,
 }
 
 impl Local {
     pub fn new() -> Self {
-        Local { ident: Ident::new(), span: Span::new(), expr: Expr::Unit(Unit::new()) }
+        Local {
+            ident: Ident::new(),
+            span: Span::new(),
+            expr: Expr::Unit(Unit::new()),
+        }
     }
 
     pub fn with_ident(mut self, ident: Ident) -> Self {

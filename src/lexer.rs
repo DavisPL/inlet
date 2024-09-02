@@ -152,7 +152,7 @@ impl<'a> Lexer<'a> {
                     self.complete();
                     return Ok(Token::Semi);
                 }
-                 
+
                 '=' => {
                     self.step(1);
                     self.complete();
