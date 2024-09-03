@@ -14,6 +14,18 @@ pub enum Expr {
     Path(Path),
 }
 
+impl Expr {
+    pub fn span(&self) -> Span {
+        match self {
+            Self::Bin(bin_exp) => bin_exp.span.clone(),
+            Self::Lit(lit) => lit.span().clone(),
+            Self::Ident(ident) => ident.span.clone(),
+            Self::FunCall(fn_call) => fn_call.span.clone(),
+            Self::Path(path) => path.span.clone(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum Op {
     Add,
@@ -48,7 +60,7 @@ impl BinExp {
 
 #[derive(Debug)]
 pub struct Unit {
-    span: Span,
+    pub span: Span,
 }
 
 impl Unit {

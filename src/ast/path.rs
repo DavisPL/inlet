@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::{ast::ident::Ident, span::Span};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Path {
     pub segments: Vec<Ident>,
     pub span: Span,
@@ -24,6 +24,19 @@ impl Path {
     pub fn with_span(mut self, span: Span) -> Self {
         self.span = span;
         self
+    }
+}
+
+impl From<String> for Path {
+    fn from(value: String) -> Self {
+        let segments = value
+            .split("::")
+            .map(|raw| Ident::new().with_raw(raw.to_owned()))
+            .collect();
+        Path {
+            segments,
+            span: Span::new(),
+        }
     }
 }
 

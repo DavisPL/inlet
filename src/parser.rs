@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::ast::{
     BinExp, Block, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local, Op,
-    Origin, Path, Stmt,
+    Origin, Path, Return, Stmt,
 };
 
 use crate::error::ParseError;
@@ -170,6 +170,8 @@ impl<'a> Parser<'a> {
 
         if current == &Token::KwLet {
             return Ok(Stmt::Local(self.parse_local()?));
+        } else if current == &Token::KwReturn {
+            return Ok(Stmt::Return(self.parse_return()?));
         }
 
         Err(ParseError::from(format!(
@@ -194,40 +196,56 @@ impl<'a> Parser<'a> {
             .with_span(self.span()))
     }
 
-    pub fn parse_expr(&mut self) -> ParseResult<Expr> {
+    pub fn parse_return(&mut self) -> ParseResult<Return> {
         self.start();
+        self.expect(Token::KwReturn)?;
+
+        let expr = self.parse_expr()?;
+
+        Ok(Return::new().with_expr(expr).with_span(self.span()))
+    }
+
+    pub fn parse_expr(&mut self) -> ParseResult<Expr> {
+        // Custom handling for span creation
+        let start_loc = self.current_span().from;
         let mut expr = self.parse_term()?;
 
         while self.current() == &Token::Plus {
             self.expect(Token::Plus)?;
             let rhs = self.parse_term()?;
-            expr = Expr::Bin(BinExp::new(expr, Op::Add, rhs).with_span(self.span()));
+
+            let end_loc = self.current_span().to;
+            let span = Span::new().from(start_loc.clone()).to(end_loc);
+
+            expr = Expr::Bin(BinExp::new(expr, Op::Add, rhs).with_span(span));
         }
 
         Ok(expr)
     }
 
     pub fn parse_term(&mut self) -> ParseResult<Expr> {
-        // Start a new span for this term
-        self.start();
+        // Custom handling for span creation
+        let start_loc = self.current_span().from;
         let mut expr = self.parse_factor()?;
 
         while self.current() == &Token::Star {
             self.expect(Token::Star)?;
             let rhs = self.parse_factor()?;
-            expr = Expr::Bin(BinExp::new(expr, Op::Multiply, rhs).with_span(self.span()));
+
+            let end_loc = self.current_span().to;
+            let span = Span::new().from(start_loc.clone()).to(end_loc);
+
+            expr = Expr::Bin(BinExp::new(expr, Op::Multiply, rhs).with_span(span));
         }
 
         Ok(expr)
     }
 
     pub fn parse_factor(&mut self) -> ParseResult<Expr> {
-        // Start a new span for this factor
-        self.start();
-
         let current = self.current().clone();
         match current {
             Token::NumLit(num_lit) => {
+                self.start();
                 self.advance(1);
                 Ok(Expr::Lit(Lit::NumLit(
                     num_lit.clone().with_span(self.span()),
@@ -235,6 +253,7 @@ impl<'a> Parser<'a> {
             }
 
             Token::Ident(_) => {
+                self.start();
                 let path = self.parse_path()?;
 
                 if self._eat(Token::LParen) {
@@ -249,7 +268,7 @@ impl<'a> Parser<'a> {
                     ));
                 }
 
-                Ok(Expr::Path(path))
+                Ok(Expr::Path(path.with_span(self.span())))
             }
 
             Token::LParen => {
@@ -340,6 +359,14 @@ impl<'a> Parser<'a> {
         }
 
         &self.input[self.index]
+    }
+
+    fn current_span(&self) -> Span {
+        if self.index > self.input.len() {
+            return Span::new();
+        }
+
+        self.spans[self.index].clone()
     }
 
     fn span(&mut self) -> Span {

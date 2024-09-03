@@ -59,6 +59,7 @@ impl<'a> Lexer<'a> {
                 "fn" => Ok(Token::KwFn),
                 "let" => Ok(Token::KwLet),
                 "mod" => Ok(Token::KwMod),
+                "return" => Ok(Token::KwReturn),
                 _ => Ok(Token::Ident(Ident::new().with_raw(raw))),
             }
         } else if current.is_numeric() {

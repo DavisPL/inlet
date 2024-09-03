@@ -1,42 +1,44 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Arc};
 
 use error::SemaResult;
 
 mod error;
 mod function;
 mod ident;
+mod origin;
 
 pub use function::*;
 pub use ident::*;
+pub use origin::*;
 
-pub struct SemanticEngine<T: Analysis> {
-    analyses: Vec<T>,
-}
+// pub struct SemanticEngine {
+//     analyses: Vec<Arc<dyn Analysis>>,
+// }
 
-impl<T: Analysis> SemanticEngine<T> {
-    pub fn new() -> Self {
-        SemanticEngine { analyses: vec![] }
-    }
+// impl SemanticEngine {
+//     pub fn new() -> Self {
+//         SemanticEngine { analyses: vec![] }
+//     }
 
-    pub fn with_analysis(mut self, analysis: T) -> Self {
-        self.analyses.push(analysis);
-        self
-    }
+//     pub fn with_analysis(mut self, analysis: Arc<dyn Analysis>) -> Self {
+//         self.analyses.push(analysis);
+//         self
+//     }
 
-    pub fn run(&mut self) -> SemaResult<()> {
-        let mut errors = Vec::new();
-        for analyis in &mut self.analyses {
-            analyis.analyze().map_err(|err| errors.extend(err));
-        }
+//     pub fn run(&mut self) -> SemaResult<()> {
+//         let mut errors = Vec::new();
+//         for analyis in &mut self.analyses {
+//             analyis.analyze().map_err(|err| errors.extend(err));
+//         }
 
-        if errors.len() > 0 {
-            return Err(errors);
-        }
+//         if errors.len() > 0 {
+//             return Err(errors);
+//         }
 
-        Ok(())
-    }
-}
+//         Ok(())
+//     }
+// }
 
-pub trait Analysis: Sized {
+pub trait Analysis {
     fn analyze(&mut self) -> SemaResult<()>;
 }

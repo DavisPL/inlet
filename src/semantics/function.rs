@@ -1,5 +1,5 @@
 use crate::{
-    ast::{Expr, File},
+    ast::{Expr, File, Origin},
     symbol::SymbolTable,
     visit::{visit_expr, visit_item_fn, visit_item_mod, visit_local, Visit},
 };
@@ -8,7 +8,19 @@ use crate::{
 pub struct FunctionAnalysis<'a> {
     file: &'a File,
     prefix: String,
-    table: SymbolTable<()>,
+    table: SymbolTable<FunctionData>,
+}
+
+#[derive(Clone)]
+pub struct FunctionData {
+    pub params: Vec<ParamData>,
+    pub ret_origin: Origin,
+}
+
+#[derive(Clone)]
+pub struct ParamData {
+    pub name: String,
+    pub origin: Origin,
 }
 
 impl<'a> FunctionAnalysis<'a> {
@@ -20,7 +32,7 @@ impl<'a> FunctionAnalysis<'a> {
         }
     }
 
-    pub fn analyze(&mut self) -> super::error::SemaResult<SymbolTable<()>> {
+    pub fn analyze(&mut self) -> super::error::SemaResult<SymbolTable<FunctionData>> {
         self.visit_file(self.file);
         Ok(self.table.clone())
     }
@@ -33,7 +45,20 @@ impl Visit for FunctionAnalysis<'_> {
 
         // TODO: Account for functions that are declared multiple times
         // TODO: Account for functions declared inside other functions
-        self.table.insert(path, ());
+        self.table.insert(
+            path,
+            FunctionData {
+                params: node
+                    .params
+                    .iter()
+                    .map(|param| ParamData {
+                        name: param.ident.to_string(),
+                        origin: param.origin.clone(),
+                    })
+                    .collect(),
+                ret_origin: node.ret_origin.clone(),
+            },
+        );
     }
 
     fn visit_item_mod(&mut self, node: &crate::ast::ItemMod) {

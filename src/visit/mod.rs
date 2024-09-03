@@ -1,6 +1,6 @@
 use crate::ast::{
     BinExp, Block, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin,
-    Path, Stmt, Unit,
+    Path, Return, Stmt, Unit,
 };
 
 pub trait Visit: Sized {
@@ -46,6 +46,10 @@ pub trait Visit: Sized {
 
     fn visit_lit(&mut self, node: &Lit) {
         visit_lit(self, node)
+    }
+
+    fn visit_return(&mut self, node: &Return) {
+        visit_return(self, node)
     }
 
     fn visit_ident(&mut self, _node: &Ident) {
@@ -102,6 +106,7 @@ pub fn visit_block(visitor: &mut impl Visit, node: &Block) {
 pub fn visit_stmt(visitor: &mut impl Visit, node: &Stmt) {
     match node {
         Stmt::Local(local) => visitor.visit_local(local),
+        Stmt::Return(return_) => visitor.visit_return(return_),
     }
 }
 
@@ -138,4 +143,8 @@ pub fn visit_fn_call(visitor: &mut impl Visit, node: &FnCall) {
     for arg in &node.args {
         visitor.visit_expr(arg);
     }
+}
+
+pub fn visit_return(visitor: &mut impl Visit, node: &Return) {
+    visitor.visit_expr(&node.expr);
 }

@@ -8,6 +8,15 @@ pub enum Lit {
     UnitLit(Unit),
 }
 
+impl Lit {
+    pub fn span(&self) -> Span {
+        match self {
+            Lit::NumLit(num_lit) => num_lit.span.clone(),
+            Lit::UnitLit(unit_lit) => unit_lit.span.clone(),
+        }
+    }
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct NumLit {
     value: i32,
