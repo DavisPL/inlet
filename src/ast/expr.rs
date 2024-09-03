@@ -83,6 +83,11 @@ impl FnCall {
         self
     }
 
+    pub fn with_args(mut self, args: Vec<Expr>) -> Self {
+        self.args = args;
+        self
+    }
+
     pub fn with_span(mut self, span: Span) -> Self {
         self.span = span;
         self

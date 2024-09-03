@@ -39,6 +39,11 @@ impl<'a> IdentAnalysis<'a> {
 
 impl Visit for IdentAnalysis<'_> {
     fn visit_item_fn(&mut self, node: &crate::ast::ItemFn) {
+        // Add function parameters to the symbol table
+        for param in &node.params {
+            self.table.insert(param.ident.to_string(), ());
+        }
+
         visit_item_fn(self, node);
 
         // Clear the table for other functions
@@ -52,16 +57,15 @@ impl Visit for IdentAnalysis<'_> {
 
     fn visit_expr(&mut self, node: &crate::ast::Expr) {
         match node {
-            Expr::Ident(ident) => {
+            Expr::Path(path) => {
+                let rep: String = path.to_string();
+
                 // Make sure this identifier has been defined
-                if self.table.find(&ident.to_string()).is_none() {
+                if self.table.find(&rep).is_none() {
                     self.errors.push(
                         SemaError::new()
-                            .with_message(format!(
-                                "Couldn't find a definition for '{}'",
-                                ident.to_string()
-                            ))
-                            .with_span(ident.span.clone()),
+                            .with_message(format!("Couldn't find a definition for '{}'", rep))
+                            .with_span(path.span.clone()),
                     );
                 }
             }

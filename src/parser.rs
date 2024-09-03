@@ -1,8 +1,8 @@
 use std::collections::VecDeque;
 
 use crate::ast::{
-    BinExp, Block, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path,
-    Stmt,
+    BinExp, Block, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local, Op,
+    Origin, Path, Stmt,
 };
 
 use crate::error::ParseError;
@@ -69,7 +69,7 @@ impl<'a> Parser<'a> {
 
         // Read the parameters
         self.expect(Token::LParen)?;
-        // TODO: Parse the parameter list
+        let params = self.parse_param_list()?;
         self.expect(Token::RParen)?;
 
         // Read the return type
@@ -84,10 +84,40 @@ impl<'a> Parser<'a> {
         Ok(Item::ItemFn(
             ItemFn::new()
                 .with_ident(ident)
+                .with_params(params)
                 .with_body(body)
                 .with_ret_origin(ret_origin)
                 .with_span(self.span()),
         ))
+    }
+
+    pub fn parse_param_list(&mut self) -> ParseResult<Vec<FnParam>> {
+        let mut args = Vec::new();
+
+        if self.current() == &Token::RParen {
+            // There are no parameters
+            Ok(args)
+        } else {
+            args.push(self.parse_param()?);
+            while self.current() == &Token::Comma {
+                self.advance(1);
+                args.push(self.parse_param()?);
+            }
+            Ok(args)
+        }
+    }
+
+    pub fn parse_param(&mut self) -> ParseResult<FnParam> {
+        self.start();
+
+        let ident = self.parse_ident()?;
+        self.expect(Token::Colon)?;
+        let origin = self.parse_origin()?;
+
+        Ok(FnParam::new()
+            .with_ident(ident)
+            .with_origin(origin)
+            .with_span(self.span()))
     }
 
     pub fn parse_origin(&mut self) -> ParseResult<Origin> {
@@ -212,7 +242,10 @@ impl<'a> Parser<'a> {
 
                     self.expect(Token::RParen)?;
                     return Ok(Expr::FunCall(
-                        FnCall::new().with_path(path).with_span(self.span()),
+                        FnCall::new()
+                            .with_path(path)
+                            .with_args(args)
+                            .with_span(self.span()),
                     ));
                 }
 

@@ -63,7 +63,7 @@ fn main() {
             let marker = " ".repeat(error.span.from.column - 1) + &"~".repeat(length);
             let col_num_len = (error.span.from.line - 1).to_string().len();
 
-            println!("[ERROR] {}", error.message);
+            println!("[ERROR] {}\n", error.message);
             println!("{}:{}", error.span.from.line, line);
             println!("{} {}\n", " ".repeat(col_num_len), marker);
         }

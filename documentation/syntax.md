@@ -7,7 +7,9 @@ item ::= item-mod | item-fn
 
 item-mod ::= "mod" ident "{" file "}"
 
-item-fn ::= "fn" ident ["[" ("*"|path) ]"] "(" param-list ")" "{" block "}"
+item-fn ::= "fn" ident "(" [param-list] ")" "->" origin "{" block "}"
+
+origin ::= "{" ("*"|path) "}"
 
 path ::= ident {"::" ident}
 
@@ -22,4 +24,8 @@ term ::= "(" expr ")" | ident | num-lit | fn-call
 fn-call ::= path "(" [arg-list] ")"
 
 arg-list ::= expr { "," expr }
+
+param-list ::= param { "," param }
+
+param ::= ident ":" origin
 ```
