@@ -158,7 +158,6 @@ impl<'a> Visit for ExprVisitor<'a> {
         let name = node.to_string();
 
         if let Some(data) = self.locals.find(&name) {
-            // println!("Origin of local var {} is {}", name, data.origin);
             self.origin = data.origin;
         } else {
             self.errors.push(

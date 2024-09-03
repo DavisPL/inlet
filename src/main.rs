@@ -27,14 +27,9 @@ fn main() {
     let mut lexer = Lexer::new(&slice);
     let (tokens, spans) = lexer.lex().unwrap(); // TODO: Figure out a better way to handle errors
 
-    // println!("{:#?}", tokens);
-    // println!("{:#?}", spans);
-
     // Next, we'll run the parser
     let mut parser = Parser::new(&tokens, &spans);
     let ast = parser.parse_file().unwrap(); // TODO: Figure out a better way to handle errors
-
-    // println!("{:#?}", ast);
 
     // Next, we'll run some semantic analysis
     // We'll begin by collecting all the function declarations
@@ -59,7 +54,7 @@ fn main() {
             };
 
             let marker = " ".repeat(error.span.from.column - 1) + &"~".repeat(length);
-            let col_num_len = (error.span.from.line - 1).to_string().len();
+            let col_num_len = (error.span.from.line).to_string().len();
 
             println!("[ERROR] {}\n", error.message);
             println!("{}:{}", error.span.from.line, line);
@@ -96,7 +91,7 @@ fn main() {
             };
 
             let marker = " ".repeat(c) + &"~".repeat(length);
-            let col_num_len = (r).to_string().len();
+            let col_num_len = (error.span.from.line).to_string().len();
 
             println!("[ERROR] {}\n", error.message);
             println!("{}:{}", error.span.from.line, line);

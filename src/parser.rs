@@ -207,17 +207,19 @@ impl<'a> Parser<'a> {
 
     pub fn parse_expr(&mut self) -> ParseResult<Expr> {
         // Custom handling for span creation
-        let start_loc = self.current_span().from;
         let mut expr = self.parse_term()?;
+        let start = expr.span().clone();
 
         while self.current() == &Token::Plus {
             self.expect(Token::Plus)?;
             let rhs = self.parse_term()?;
-
-            let end_loc = self.current_span().to;
-            let span = Span::new().from(start_loc.clone()).to(end_loc);
-
-            expr = Expr::Bin(BinExp::new(expr, Op::Add, rhs).with_span(span));
+            expr = Expr::Bin(
+                BinExp::new(expr, Op::Add, rhs).with_span(
+                    Span::new()
+                        .from(start.from.clone())
+                        .to(self.previous_span().to),
+                ),
+            );
         }
 
         Ok(expr)
@@ -225,17 +227,19 @@ impl<'a> Parser<'a> {
 
     pub fn parse_term(&mut self) -> ParseResult<Expr> {
         // Custom handling for span creation
-        let start_loc = self.current_span().from;
         let mut expr = self.parse_factor()?;
+        let start = expr.span().clone();
 
         while self.current() == &Token::Star {
             self.expect(Token::Star)?;
             let rhs = self.parse_factor()?;
-
-            let end_loc = self.current_span().to;
-            let span = Span::new().from(start_loc.clone()).to(end_loc);
-
-            expr = Expr::Bin(BinExp::new(expr, Op::Multiply, rhs).with_span(span));
+            expr = Expr::Bin(
+                BinExp::new(expr, Op::Multiply, rhs).with_span(
+                    Span::new()
+                        .from(start.from.clone())
+                        .to(self.previous_span().to),
+                ),
+            );
         }
 
         Ok(expr)
@@ -381,6 +385,20 @@ impl<'a> Parser<'a> {
             .to(end.to.clone());
 
         self.finish();
+        span
+    }
+
+    fn previous_span(&mut self) -> Span {
+        let mut end = self.starts[0].clone();
+
+        if self.index > 0 && self.index <= self.spans.len() {
+            end = self.spans[self.index - 1].clone();
+        }
+
+        let span = Span::new()
+            .from(self.starts.last().unwrap().from.clone())
+            .to(end.to.clone());
+
         span
     }
 
