@@ -95,7 +95,7 @@ impl Visit for OriginAnalysis<'_> {
 
         match ret_origin {
             Ok(ret_origin) => {
-                if self.ret_origin != ret_origin {
+                if !ret_origin.satisfies(&self.ret_origin) {
                     let message = format!("Function '{}' should return a value with origin '{}', but a value with origin '{}' is returned instead", self.cur_func, self.ret_origin, ret_origin);
                     self.errors.push(
                         SemaError::new()
@@ -191,7 +191,7 @@ impl<'a> Visit for ExprVisitor<'a> {
 
                 match actual {
                     Ok(origin) => {
-                        if param.origin != origin {
+                        if !origin.satisfies(&param.origin) {
                             self.errors.push(SemaError::new().with_message(format!("Parameter '{}' of function '{}' must have an origin of '{}', but a value with origin '{}' was provided", param.name, node.path.to_string(), param.origin, origin)).with_span(arg.span()))
                         }
                     }

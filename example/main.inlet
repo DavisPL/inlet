@@ -2,12 +2,12 @@ mod bar {
     mod baz {
         fn foo(y: {*}) -> {example::bar::baz} {
             let x = (6 + 6) + y;
-            return y;
+            return example::bar::some(5, 10);
         }
     }
 
-    fn some(x: {*}, y: {boo::bar}) -> {*} {
-        let z = example::bar::baz::foo(y, 6 * 7);
-        return x;
+    fn some(x: {*}, y: {example::bar}) -> {example::bar::baz} {
+        let z = example::bar::baz::foo(y);
+        return z;
     }
 }

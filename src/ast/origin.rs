@@ -8,6 +8,21 @@ pub enum Origin {
     Exact(Path),
 }
 
+impl Origin {
+    pub fn satisfies(&self, target: &Origin) -> bool {
+        match self {
+            Self::Universal => target == &Origin::Universal,
+            Self::Exact(p_self) => match target {
+                Origin::Universal => true,
+                Origin::Exact(p_target) => p_self
+                    .to_string()
+                    .as_str()
+                    .starts_with(p_target.to_string().as_str()),
+            },
+        }
+    }
+}
+
 impl Display for Origin {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
