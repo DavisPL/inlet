@@ -24,7 +24,7 @@ impl Ident {
         self
     }
 
-    pub fn raw(&self) -> &str {
+    pub fn to_str(&self) -> &str {
         &self.raw
     }
 }

@@ -1,5 +1,6 @@
 use crate::ast::{
-    BinExp, Block, Expr, File, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin, Stmt, Unit,
+    BinExp, Block, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin,
+    Path, Stmt, Unit,
 };
 
 pub trait Visit: Sized {
@@ -39,6 +40,10 @@ pub trait Visit: Sized {
         visit_bin_expr(self, node)
     }
 
+    fn visit_fn_call(&mut self, node: &FnCall) {
+        visit_fn_call(self, node)
+    }
+
     fn visit_lit(&mut self, node: &Lit) {
         visit_lit(self, node)
     }
@@ -56,6 +61,10 @@ pub trait Visit: Sized {
     }
 
     fn visit_unit_lit(&mut self, _node: &Unit) {
+        // Nothing to do here...
+    }
+
+    fn visit_path(&mut self, _node: &Path) {
         // Nothing to do here...
     }
 }
@@ -106,6 +115,8 @@ pub fn visit_expr(visitor: &mut impl Visit, node: &Expr) {
         Expr::Bin(bin_expr) => visitor.visit_bin_expr(bin_expr),
         Expr::Ident(ident) => visitor.visit_ident(ident),
         Expr::Lit(lit) => visitor.visit_lit(lit),
+        Expr::FunCall(fn_call) => visitor.visit_fn_call(fn_call),
+        Expr::Path(path) => visitor.visit_path(path),
     }
 }
 
@@ -118,5 +129,13 @@ pub fn visit_lit(visitor: &mut impl Visit, node: &Lit) {
     match node {
         Lit::NumLit(num_lit) => visitor.visit_num_lit(num_lit),
         Lit::UnitLit(unit_lit) => visitor.visit_unit_lit(unit_lit),
+    }
+}
+
+pub fn visit_fn_call(visitor: &mut impl Visit, node: &FnCall) {
+    visitor.visit_path(&node.path);
+
+    for arg in &node.args {
+        visitor.visit_expr(arg);
     }
 }

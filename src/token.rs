@@ -15,6 +15,7 @@ pub enum Token {
     NumLit(NumLit),
 
     // Delimiters
+    Comma,
     Colon,
     ColonColon,
     Semi,
@@ -43,7 +44,7 @@ impl std::fmt::Display for Token {
             Self::KwLet => write!(f, "let"),
             Self::KwReturn => write!(f, "return"),
 
-            Self::Ident(ident) => write!(f, "{}", ident.raw()),
+            Self::Ident(ident) => write!(f, "{}", ident.to_str()),
             Self::NumLit(lit) => write!(f, "{:?}", lit.value()),
 
             Self::Colon => write!(f, ":"),

@@ -2,7 +2,7 @@ use std::{fs, iter::successors, path::PathBuf};
 
 use lexer::Lexer;
 use parser::Parser;
-use semantics::{IdentAnalysis, SemanticEngine};
+use semantics::{FunctionAnalysis, IdentAnalysis, SemanticEngine};
 
 mod ast;
 mod diagnostic;
@@ -37,10 +37,14 @@ fn main() {
     // println!("{:#?}", ast);
 
     // Next, we'll run some semantic analysis
-    let sema_result = SemanticEngine::new()
-        .with_analysis(IdentAnalysis::new(&ast))
-        .run();
+    // We'll begin by collecting all the function declarations
+    let functions = FunctionAnalysis::new(&ast, "example".to_string())
+        .analyze()
+        .expect("TODO: Handle function collection errors properly.");
 
+    let mut sema_engine = SemanticEngine::new().with_analysis(IdentAnalysis::new(&ast, &functions));
+
+    let sema_result = sema_engine.run();
     if let Err(errors) = sema_result {
         // We encountered one or more semantic errors... print them
         for error in errors {

@@ -9,6 +9,7 @@ use super::{error::SemaError, Analysis};
 /// This analysis ensures that every identifier is defined before usage.
 pub struct IdentAnalysis<'a> {
     file: &'a File,
+    functions: &'a SymbolTable<()>,
     table: SymbolTable<()>,
     errors: Vec<SemaError>,
 }
@@ -26,9 +27,10 @@ impl Analysis for IdentAnalysis<'_> {
 }
 
 impl<'a> IdentAnalysis<'a> {
-    pub fn new(file: &File) -> IdentAnalysis {
+    pub fn new(file: &'a File, functions: &'a SymbolTable<()>) -> IdentAnalysis<'a> {
         IdentAnalysis {
             file,
+            functions,
             table: SymbolTable::new(),
             errors: vec![],
         }
@@ -49,18 +51,38 @@ impl Visit for IdentAnalysis<'_> {
     }
 
     fn visit_expr(&mut self, node: &crate::ast::Expr) {
-        if let Expr::Ident(ident) = node {
-            // Make sure this identifier has been defined
-            if self.table.find(&ident.to_string()).is_none() {
-                self.errors.push(
-                    SemaError::new()
-                        .with_message(format!(
-                            "Couldn't find a definition for '{}'",
-                            ident.to_string()
-                        ))
-                        .with_span(ident.span.clone()),
-                );
+        match node {
+            Expr::Ident(ident) => {
+                // Make sure this identifier has been defined
+                if self.table.find(&ident.to_string()).is_none() {
+                    self.errors.push(
+                        SemaError::new()
+                            .with_message(format!(
+                                "Couldn't find a definition for '{}'",
+                                ident.to_string()
+                            ))
+                            .with_span(ident.span.clone()),
+                    );
+                }
             }
+
+            Expr::FunCall(fun_call) => {
+                let fun_name = &fun_call.path.to_string();
+
+                // Make sure this function exists
+                if self.functions.find(fun_name).is_none() {
+                    self.errors.push(
+                        SemaError::new()
+                            .with_message(format!(
+                                "Couldn't find a definition for function '{}'",
+                                fun_name
+                            ))
+                            .with_span(fun_call.path.span.clone()),
+                    );
+                }
+            }
+
+            _ => { /* No need to handle other expressions */ }
         }
 
         visit_expr(self, node);

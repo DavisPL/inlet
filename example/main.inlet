@@ -6,7 +6,7 @@ mod bar {
     }
 
     fn some() -> {*} {
-        let z = bar + baz;
+        let z = bar + example::bar::baz::foo(x, 5 + 6, example::bar::baz());
         let x = z + 5 * 7;
     }
 }

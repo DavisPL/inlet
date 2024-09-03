@@ -17,5 +17,9 @@ stmt ::= "let" ident "=" expr
 
 expr ::= term { "+" expr }
 
-term ::= "(" expr ")" | ident | num-lit
+term ::= "(" expr ")" | ident | num-lit | fn-call
+
+fn-call ::= path "(" [arg-list] ")"
+
+arg-list ::= expr { "," expr }
 ```

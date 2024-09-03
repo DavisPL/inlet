@@ -1,8 +1,12 @@
+use std::marker::PhantomData;
+
 use error::SemaResult;
 
 mod error;
+mod function;
 mod ident;
 
+pub use function::*;
 pub use ident::*;
 
 pub struct SemanticEngine<T: Analysis> {

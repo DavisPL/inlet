@@ -147,6 +147,12 @@ impl<'a> Lexer<'a> {
                     }
                 }
 
+                ',' => {
+                    self.step(1);
+                    self.complete();
+                    return Ok(Token::Comma);
+                }
+
                 ';' => {
                     self.step(1);
                     self.complete();

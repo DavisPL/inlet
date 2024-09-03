@@ -2,7 +2,7 @@ use crate::span::Span;
 
 pub type SemaResult<T> = Result<T, Vec<SemaError>>;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SemaError {
     pub message: String,
     pub span: Span,

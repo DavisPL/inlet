@@ -1,7 +1,8 @@
 use std::collections::VecDeque;
 
 use crate::ast::{
-    BinExp, Block, Expr, File, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Stmt,
+    BinExp, Block, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path,
+    Stmt,
 };
 
 use crate::error::ParseError;
@@ -203,9 +204,19 @@ impl<'a> Parser<'a> {
                 )))
             }
 
-            Token::Ident(ident) => {
-                self.advance(1);
-                Ok(Expr::Ident(ident.clone().with_span(self.span())))
+            Token::Ident(_) => {
+                let path = self.parse_path()?;
+
+                if self._eat(Token::LParen) {
+                    let args = self.parse_arg_list()?;
+
+                    self.expect(Token::RParen)?;
+                    return Ok(Expr::FunCall(
+                        FnCall::new().with_path(path).with_span(self.span()),
+                    ));
+                }
+
+                Ok(Expr::Path(path))
             }
 
             Token::LParen => {
@@ -222,7 +233,26 @@ impl<'a> Parser<'a> {
         }
     }
 
+    pub fn parse_arg_list(&mut self) -> ParseResult<Vec<Expr>> {
+        let mut args = Vec::new();
+
+        if self.current() == &Token::RParen {
+            // There are no arguments
+            Ok(args)
+        } else {
+            args.push(self.parse_expr()?);
+            while self.current() == &Token::Comma {
+                self.advance(1);
+                args.push(self.parse_expr()?);
+            }
+            Ok(args)
+        }
+    }
+
     pub fn parse_path(&mut self) -> ParseResult<Path> {
+        // Start a new span
+        self.start();
+
         let mut segments = Vec::new();
         segments.push(self.parse_ident()?);
 
@@ -231,7 +261,7 @@ impl<'a> Parser<'a> {
             segments.push(self.parse_ident()?);
         }
 
-        Ok(Path::new().with_segments(segments))
+        Ok(Path::new().with_segments(segments).with_span(self.span()))
     }
 
     pub fn parse_item_mod(&mut self) -> ParseResult<Item> {
