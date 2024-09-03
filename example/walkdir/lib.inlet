@@ -1,0 +1,4 @@
+fn walk() -> {*} {
+    let path = 123;
+    let result = std::fs::read_dir(path);
+}

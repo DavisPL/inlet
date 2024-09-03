@@ -1,8 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::ast::{
-    BinExp, Block, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local, Op,
-    Origin, Path, Return, Stmt,
+    BinExp, Block, Claim, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Return, Stmt
 };
 
 use crate::error::ParseError;
@@ -172,12 +171,21 @@ impl<'a> Parser<'a> {
             return Ok(Stmt::Local(self.parse_local()?));
         } else if current == &Token::KwReturn {
             return Ok(Stmt::Return(self.parse_return()?));
+        } else if current == &Token::KwClaim {
+            return Ok(Stmt::Claim(self.parse_claim()?));
         }
 
         Err(ParseError::from(format!(
             "Unknown statement beginning with '{}'",
             current
         )))
+    }
+
+    pub fn parse_claim(&mut self) -> ParseResult<Claim> {
+        self.start();
+        self.expect(Token::KwClaim)?;
+        let ident = self.parse_ident()?;
+        Ok(Claim::new().with_ident(ident).with_span(self.span()))
     }
 
     pub fn parse_local(&mut self) -> ParseResult<Local> {

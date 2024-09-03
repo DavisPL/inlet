@@ -108,6 +108,10 @@ impl Visit for OriginAnalysis<'_> {
             Err(errs) => self.errors.extend(errs),
         }
     }
+
+    fn visit_claim(&mut self, node: &crate::ast::Claim) {
+        self.locals.insert(node.ident.to_string(), LocalData { origin: Origin::Exact(Path::from(self.prefix.clone())) })
+    }
 }
 
 #[derive(Debug, Clone)]

@@ -1,0 +1,17 @@
+mod fs {
+    fn read(path: {example}) -> {*} {
+
+    }
+
+    fn read_dir(path: {example}) -> {*} {
+
+    }
+}
+
+mod path {
+    mod PathBuf {
+        fn new(value: {example}) -> {*} {
+            return 123;
+        }
+    }
+}

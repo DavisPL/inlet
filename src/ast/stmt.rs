@@ -9,6 +9,7 @@ use super::Unit;
 pub enum Stmt {
     Local(Local),
     Return(Return),
+    Claim(Claim)
 }
 
 #[derive(Debug)]
@@ -59,6 +60,31 @@ impl Return {
 
     pub fn with_expr(mut self, expr: Expr) -> Self {
         self.expr = expr;
+        self
+    }
+
+    pub fn with_span(mut self, span: Span) -> Self {
+        self.span = span;
+        self
+    }
+}
+
+#[derive(Debug)]
+pub struct Claim {
+    pub ident: Ident,
+    pub span: Span
+}
+
+impl Claim {
+    pub fn new() -> Self {
+        Claim {
+            ident: Ident::new(),
+            span: Span::new()
+        }
+    }
+
+    pub fn with_ident(mut self, ident: Ident) -> Self {
+        self.ident = ident;
         self
     }
 

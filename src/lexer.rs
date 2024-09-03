@@ -42,13 +42,13 @@ impl<'a> Lexer<'a> {
         }
 
         let current = self.current();
-        if current.is_alphabetic() {
+        if current.is_alphabetic() || current == '_' {
             // Mark the beginning of this token
             let i = self.index;
             self.start();
             self.step(1);
 
-            while self.current().is_alphanumeric() {
+            while self.current().is_alphanumeric() || self.current() == '_' {
                 self.step(1);
             }
 
@@ -60,6 +60,7 @@ impl<'a> Lexer<'a> {
                 "let" => Ok(Token::KwLet),
                 "mod" => Ok(Token::KwMod),
                 "return" => Ok(Token::KwReturn),
+                "claim" => Ok(Token::KwClaim),
                 _ => Ok(Token::Ident(Ident::new().with_raw(raw))),
             }
         } else if current.is_numeric() {

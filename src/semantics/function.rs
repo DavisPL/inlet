@@ -11,24 +11,28 @@ pub struct FunctionAnalysis<'a> {
     table: SymbolTable<FunctionData>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct FunctionData {
     pub params: Vec<ParamData>,
     pub ret_origin: Origin,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ParamData {
     pub name: String,
     pub origin: Origin,
 }
 
 impl<'a> FunctionAnalysis<'a> {
-    pub fn new(file: &File, prefix: String) -> FunctionAnalysis {
+    pub fn new(
+        file: &'a File,
+        prefix: String,
+        table: &'a SymbolTable<FunctionData>,
+    ) -> FunctionAnalysis<'a> {
         FunctionAnalysis {
             file,
             prefix,
-            table: SymbolTable::new(),
+            table: table.clone(), // This is probably way too expensive
         }
     }
 

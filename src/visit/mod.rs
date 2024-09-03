@@ -1,6 +1,5 @@
 use crate::ast::{
-    BinExp, Block, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin,
-    Path, Return, Stmt, Unit,
+    BinExp, Block, Claim, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin, Path, Return, Stmt, Unit
 };
 
 pub trait Visit: Sized {
@@ -50,6 +49,10 @@ pub trait Visit: Sized {
 
     fn visit_return(&mut self, node: &Return) {
         visit_return(self, node)
+    }
+
+    fn visit_claim(&mut self, node: &Claim) {
+        visit_claim(self, node)
     }
 
     fn visit_ident(&mut self, _node: &Ident) {
@@ -105,8 +108,9 @@ pub fn visit_block(visitor: &mut impl Visit, node: &Block) {
 
 pub fn visit_stmt(visitor: &mut impl Visit, node: &Stmt) {
     match node {
-        Stmt::Local(local) => visitor.visit_local(local),
-        Stmt::Return(return_) => visitor.visit_return(return_),
+        Stmt::Local(node) => visitor.visit_local(node),
+        Stmt::Return(node) => visitor.visit_return(node),
+        Stmt::Claim(node) => visitor.visit_claim(node)
     }
 }
 
@@ -147,4 +151,8 @@ pub fn visit_fn_call(visitor: &mut impl Visit, node: &FnCall) {
 
 pub fn visit_return(visitor: &mut impl Visit, node: &Return) {
     visitor.visit_expr(&node.expr);
+}
+
+pub fn visit_claim(visitor: &mut impl Visit, node: &Claim) {
+    visitor.visit_ident(&node.ident);
 }

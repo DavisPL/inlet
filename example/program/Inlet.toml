@@ -1,0 +1,6 @@
+[package]
+name = "program"
+
+[dependencies]
+walkdir = { path = "../walkdir" }
+std = { path = "../std" }

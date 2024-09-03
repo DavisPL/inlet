@@ -1,0 +1,6 @@
+fn main() -> {*} {
+    let path = std::path::PathBuf::new(123);
+    claim path;
+
+    let result = std::fs::read(path);
+}

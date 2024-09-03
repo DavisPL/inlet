@@ -9,6 +9,7 @@ pub enum Token {
     KwMod,
     KwLet,
     KwReturn,
+    KwClaim,
 
     // Constructs
     Ident(Ident),
@@ -43,6 +44,7 @@ impl std::fmt::Display for Token {
             Self::KwMod => write!(f, "mod"),
             Self::KwLet => write!(f, "let"),
             Self::KwReturn => write!(f, "return"),
+            Self::KwClaim => write!(f, "claim"),
 
             Self::Ident(ident) => write!(f, "{}", ident.to_str()),
             Self::NumLit(lit) => write!(f, "{:?}", lit.value()),
