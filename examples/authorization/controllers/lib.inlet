@@ -1,0 +1,18 @@
+mod products_controller {
+    fn create() -> {*} {
+        // This function handles POST requests to the `/products` endpoint of our API
+        // First, we must authenticate the user
+        let user = policies::product::create::authorize(123);
+
+        // Next, we can pass this authenticated user to the `create` method of our `Product` model
+        let _product = models::Product::create(user);
+
+        // What if we authenticated the user using the wrong policy?
+        let user = policies::product::update::authorize(123);
+
+        // Uncomment this line and see what happens!
+        // Spoiler alert - checks fail, and rightfully so! But again, the fun part here is that
+        // both `authorize` functions return the same type, but the _origins_ are different
+        // let _product = models::Product::create(user);
+    }
+}

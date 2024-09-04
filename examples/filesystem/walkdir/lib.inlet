@@ -3,5 +3,6 @@ fn walk() -> {*} {
     let raw = 123;
     
     // Try commenting this out and see what happens!
-    // let path = std::path::PathBuf::new(raw);
+    // let result = std::fs::read(raw, 2);
+    return 0;
 }

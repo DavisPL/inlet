@@ -1,0 +1,5 @@
+mod Product {
+    fn create(user: {policies::product::create}) -> {*} {
+        
+    }
+}

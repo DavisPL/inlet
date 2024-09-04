@@ -1,0 +1,6 @@
+[package]
+name = "controllers"
+
+[dependencies]
+models = { path = "../models" }
+policies = { path = "../policies" }

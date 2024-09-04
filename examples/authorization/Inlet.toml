@@ -1,0 +1,7 @@
+[package]
+name = "ecommerce-api"
+
+[dependencies]
+controllers = { path = "controllers" }
+models = { path = "models" }
+policies = { path = "policies" }

@@ -1,0 +1,4 @@
+fn main() -> {*} {
+    // Some boilerplate code might go here...
+    return 0;
+}

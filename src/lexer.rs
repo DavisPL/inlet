@@ -176,7 +176,7 @@ impl<'a> Lexer<'a> {
                             self.index += 1;
                         }
                         self.line += 1;
-                        self.column = 1;
+                        self.column = 0; // TODO: Figure out why this needs to be zero here for the spans to align properly
                         self.next()
                     } else {
                         return Err(LexError::from(format!("Expected '/' but found {}. Note that division is currently not supported.", self.current())));

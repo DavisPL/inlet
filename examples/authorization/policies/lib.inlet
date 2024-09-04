@@ -1,0 +1,23 @@
+// This module describes the authorization policies for products
+// Note that every function could return the exact same type (such as an instance
+// of a `UserData` struct) if types existed in this language, but they are tagged
+// with different origins... thus, we can differentiate between them!
+mod product {
+    mod create {
+        // Authorizes a user to create products and returns a user capability
+        // that confers on its owner the ability to create products
+        fn authorize(user: {*}) -> {policies::product::create} {
+            // Authorization logic goes here
+            return 123;
+        }
+    }
+
+    mod update {
+        // Authorizes a user to update products and returns a user capability
+        // that confers on its owner the ability to modify products
+        fn authorize(user: {*}) -> {policies::product::update} {
+            // Authorization logic goes here
+            return 123;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+mod fs {
+    // The `path` argument must come from the binary crate `program`... that makes it a `program` capability!
+    fn read(path: {program}) -> {*} {
+        return 0;
+    }
+
+    // Same applies to the `path` argument here
+    fn read_dir(path: {program}) -> {*} {
+        return 0;
+    }
+}

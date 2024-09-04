@@ -1,0 +1,4 @@
+// In this program, we want to read data from a file
+fn main() -> {*} {
+    let result = std::fs::read(234);
+}
