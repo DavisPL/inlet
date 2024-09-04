@@ -15,7 +15,7 @@ path ::= ident {"::" ident}
 
 block ::= { stmt ";" }
 
-stmt ::= "let" ident "=" expr | "return" expr
+stmt ::= "let" ident "=" expr | "return" expr | "claim" ident
 
 expr ::= term { "+" expr }
 

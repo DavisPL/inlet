@@ -1,5 +1,9 @@
+// In this program, we want to read data from a file
 fn main() -> {*} {
+    // Create a new path
     let path = std::path::PathBuf::new(123);
+
+    // Try commenting this line out... you should get an error!
     claim path;
 
     let result = std::fs::read(path);

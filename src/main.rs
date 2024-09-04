@@ -3,7 +3,7 @@ use std::{
     fs,
     iter::successors,
     panic,
-    path::{Path, PathBuf},
+    path::{self, Component, Path, PathBuf},
     sync::Arc,
 };
 
@@ -130,7 +130,8 @@ fn process_crate(path: &Path, ctx: &mut ProcessContext) {
 
     // Next, we'll perform some simple semantic analysis
     // For starters, let's collect all function definitions and then make sure all identifiers are defined
-    let functions = FunctionAnalysis::new(&ast, manifest.package.name, &ctx.functions)
+    let krate = manifest.package.name.clone();
+    let functions = FunctionAnalysis::new(&ast, krate.clone(), &ctx.functions)
         .analyze()
         .expect("TODO: Handle function collection errors properly.");
 
@@ -155,14 +156,18 @@ fn process_crate(path: &Path, ctx: &mut ProcessContext) {
             let marker = " ".repeat(error.span.from.column - 1) + &"~".repeat(length);
             let col_num_len = (error.span.from.line).to_string().len();
 
-            println!("[ERROR] {}\n", error.message);
+            println!(
+                "[ERROR] [{}]\n{}\n",
+                normalize_path(path).join(file).to_str().unwrap(),
+                error.message
+            );
             println!("{}:{}", error.span.from.line, line);
             println!("{} {}\n", " ".repeat(col_num_len), marker);
         }
     }
 
     // That's out of the way! Now, let's run the origin analysis
-    let origin_analysis = OriginAnalysis::new(&ast, &ctx.functions, "example".to_string()).analyze();
+    let origin_analysis = OriginAnalysis::new(&ast, &ctx.functions, krate).analyze();
 
     if let Err(errors) = origin_analysis {
         // We encountered one or more semantic errors... print them
@@ -193,11 +198,42 @@ fn process_crate(path: &Path, ctx: &mut ProcessContext) {
             let marker = " ".repeat(c) + &"~".repeat(length);
             let col_num_len = (error.span.from.line).to_string().len();
 
-            println!("[ERROR] {}\n", error.message);
+            println!(
+                "[ERROR] [{}]\n{}\n",
+                normalize_path(path).join(file).to_str().unwrap(),
+                error.message
+            );
             println!("{}:{}", error.span.from.line, line);
             println!("{} {}\n", " ".repeat(col_num_len), marker);
         }
     }
+}
+
+pub fn normalize_path(path: &Path) -> PathBuf {
+    let mut components = path.components().peekable();
+    let mut ret = if let Some(c @ Component::Prefix(..)) = components.peek().cloned() {
+        components.next();
+        PathBuf::from(c.as_os_str())
+    } else {
+        PathBuf::new()
+    };
+
+    for component in components {
+        match component {
+            Component::Prefix(..) => unreachable!(),
+            Component::RootDir => {
+                ret.push(component.as_os_str());
+            }
+            Component::CurDir => {}
+            Component::ParentDir => {
+                ret.pop();
+            }
+            Component::Normal(c) => {
+                ret.push(c);
+            }
+        }
+    }
+    ret
 }
 
 fn main() {
@@ -208,86 +244,4 @@ fn main() {
     process_crate(&root, &mut ctx);
 
     return;
-    // let path = PathBuf::from("./example/main.inlet");
-
-    // // First, we'll read the entire file as a string
-    // let source = fs::read_to_string(path)
-    //     .expect("Could not read file. Does it exist, and is it formatted correctly?");
-    // let slice = source.chars().collect::<Vec<char>>();
-
-    // // Next, we'll run the lexer
-    // let mut lexer = Lexer::new(&slice);
-    // let (tokens, spans) = lexer.lex().unwrap(); // TODO: Figure out a better way to handle errors
-
-    // // Next, we'll run the parser
-    // let mut parser = Parser::new(&tokens, &spans);
-    // let ast = parser.parse_file().unwrap(); // TODO: Figure out a better way to handle errors
-
-    // // Next, we'll run some semantic analysis
-    // // We'll begin by collecting all the function declarations
-    // let functions = FunctionAnalysis::new(&ast, "example".to_string())
-    //     .analyze()
-    //     .expect("TODO: Handle function collection errors properly.");
-
-    // let ident_analysis = IdentAnalysis::new(&ast, &functions).analyze();
-    // if let Err(errors) = ident_analysis {
-    //     // We encountered one or more semantic errors... print them
-    //     for error in errors {
-    //         // Find the source line with this error
-    //         let line = source
-    //             .split('\n')
-    //             .nth(error.span.from.line - 1)
-    //             .expect("Could not locate original source code line. This is a bug!");
-
-    //         let length = if error.span.to.line > error.span.from.line {
-    //             line.len() - error.span.from.column // TODO: Test this
-    //         } else {
-    //             error.span.to.column - error.span.from.column + 1
-    //         };
-
-    //         let marker = " ".repeat(error.span.from.column - 1) + &"~".repeat(length);
-    //         let col_num_len = (error.span.from.line).to_string().len();
-
-    //         println!("[ERROR] {}\n", error.message);
-    //         println!("{}:{}", error.span.from.line, line);
-    //         println!("{} {}\n", " ".repeat(col_num_len), marker);
-    //     }
-    // }
-
-    // let origin_analysis = OriginAnalysis::new(&ast, &functions, "example".to_string()).analyze();
-
-    // if let Err(errors) = origin_analysis {
-    //     // We encountered one or more semantic errors... print them
-    //     for error in errors {
-    //         let mut r = error.span.from.line;
-    //         let mut c = error.span.from.column;
-
-    //         if r > 0 {
-    //             r -= 1;
-    //         }
-
-    //         if c > 0 {
-    //             c -= 1;
-    //         }
-
-    //         // Find the source line with this error
-    //         let line = source
-    //             .split('\n')
-    //             .nth(r)
-    //             .expect("Could not locate original source code line. This is a bug!");
-
-    //         let length = if error.span.to.line > error.span.from.line {
-    //             line.len() - error.span.from.column // TODO: Test this
-    //         } else {
-    //             error.span.to.column - error.span.from.column + 1
-    //         };
-
-    //         let marker = " ".repeat(c) + &"~".repeat(length);
-    //         let col_num_len = (error.span.from.line).to_string().len();
-
-    //         println!("[ERROR] {}\n", error.message);
-    //         println!("{}:{}", error.span.from.line, line);
-    //         println!("{} {}\n", " ".repeat(col_num_len), marker);
-    //     }
-    // }
 }

@@ -9,7 +9,7 @@ use super::Unit;
 pub enum Stmt {
     Local(Local),
     Return(Return),
-    Claim(Claim)
+    Claim(Claim),
 }
 
 #[derive(Debug)]
@@ -72,14 +72,14 @@ impl Return {
 #[derive(Debug)]
 pub struct Claim {
     pub ident: Ident,
-    pub span: Span
+    pub span: Span,
 }
 
 impl Claim {
     pub fn new() -> Self {
         Claim {
             ident: Ident::new(),
-            span: Span::new()
+            span: Span::new(),
         }
     }
 

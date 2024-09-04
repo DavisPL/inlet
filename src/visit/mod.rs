@@ -1,5 +1,6 @@
 use crate::ast::{
-    BinExp, Block, Claim, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit, Origin, Path, Return, Stmt, Unit
+    BinExp, Block, Claim, Expr, File, FnCall, Ident, Item, ItemFn, ItemMod, Lit, Local, NumLit,
+    Origin, Path, Return, Stmt, Unit,
 };
 
 pub trait Visit: Sized {
@@ -110,7 +111,7 @@ pub fn visit_stmt(visitor: &mut impl Visit, node: &Stmt) {
     match node {
         Stmt::Local(node) => visitor.visit_local(node),
         Stmt::Return(node) => visitor.visit_return(node),
-        Stmt::Claim(node) => visitor.visit_claim(node)
+        Stmt::Claim(node) => visitor.visit_claim(node),
     }
 }
 

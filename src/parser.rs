@@ -1,7 +1,8 @@
 use std::collections::VecDeque;
 
 use crate::ast::{
-    BinExp, Block, Claim, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local, Op, Origin, Path, Return, Stmt
+    BinExp, Block, Claim, Expr, File, FnCall, FnParam, Ident, Item, ItemFn, ItemMod, Lit, Local,
+    Op, Origin, Path, Return, Stmt,
 };
 
 use crate::error::ParseError;

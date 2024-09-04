@@ -1,4 +1,7 @@
+// This is third-party code we got from the internet
 fn walk() -> {*} {
-    let path = 123;
-    let result = std::fs::read_dir(path);
+    let raw = 123;
+    
+    // Try commenting this out and see what happens!
+    // let path = std::path::PathBuf::new(raw);
 }

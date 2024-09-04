@@ -167,7 +167,22 @@ impl<'a> Lexer<'a> {
                     return Ok(Token::Equal);
                 }
 
-                // Two character lokahead
+                // Two character lookahead
+                '/' => {
+                    if self.lookahead(1) == '/' {
+                        self.step(1);
+                        while self.index < self.source.len() && self.current() != '\n' {
+                            self.column += 1;
+                            self.index += 1;
+                        }
+                        self.line += 1;
+                        self.column = 1;
+                        self.next()
+                    } else {
+                        return Err(LexError::from(format!("Expected '/' but found {}. Note that division is currently not supported.", self.current())));
+                    }
+                }
+
                 ':' => {
                     if self.lookahead(1) == ':' {
                         self.step(2);
